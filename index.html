@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediGrow | 채용 중복 제안 방지 대시보드</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i data-lucide="shield-check"></i>
+                <span>MediGrow</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" id="nav-dashboard">
+                    <i data-lucide="layout-dashboard"></i> 대시보드
+                </a>
+                <a href="#" class="nav-item" id="nav-history">
+                    <i data-lucide="history"></i> 전체 이력
+                </a>
+            </nav>
+
+            <div class="search-section">
+                <h3>중복 제안 확인</h3>
+                <div class="search-group">
+                    <label for="search-name">이름</label>
+                    <input type="text" id="search-name" placeholder="지원자 이름 입력">
+                </div>
+                <div class="search-group">
+                    <label for="search-year">년생</label>
+                    <input type="text" id="search-year" placeholder="예: 95, 01">
+                </div>
+                <button id="search-btn" class="btn-primary">
+                    <i data-lucide="search"></i> 검색하기
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="sync-status">
+                    <i data-lucide="refresh-cw" id="sync-icon"></i>
+                    <span id="last-sync">동기화 중...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1 id="page-title">채용 현황 대시보드</h1>
+                <div class="user-profile">
+                    <span id="current-date"></span>
+                </div>
+            </header>
+
+            <div id="dashboard-view">
+                <!-- Search Result Alert (Floating) -->
+                <div id="search-result-overlay" class="hidden">
+                    <div class="result-card">
+                        <button class="close-btn" id="close-result">&times;</button>
+                        <div id="result-content"></div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">총 지원자</span>
+                            <span class="stat-value" id="stat-total">0</span>
+                        </div>
+                        <div class="stat-icon purple"><i data-lucide="users"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">이번 달 제안</span>
+                            <span class="stat-value" id="stat-month">0</span>
+                        </div>
+                        <div class="stat-icon blue"><i data-lucide="calendar"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">최종 합격자</span>
+                            <span class="stat-value" id="stat-passed">0</span>
+                        </div>
+                        <div class="stat-icon green"><i data-lucide="check-circle"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">면접 진행률</span>
+                            <span class="stat-value" id="stat-interview-rate">0%</span>
+                        </div>
+                        <div class="stat-icon orange"><i data-lucide="trending-up"></i></div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>포지션별 분포</h3>
+                        <canvas id="positionChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>채용 플랫폼 비중</h3>
+                        <canvas id="platformChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Table View (Initially Hidden) -->
+            <div id="history-view" class="hidden">
+                <div class="table-container">
+                    <table id="history-table">
+                        <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>포지션</th>
+                                <th>플랫폼</th>
+                                <th>년생</th>
+                                <th>날짜</th>
+                                <th>경력</th>
+                                <th>면접</th>
+                                <th>합격</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Data injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="loader"></div>
+        <p>데이터를 불러오는 중입니다...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
