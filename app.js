@@ -216,6 +216,10 @@ function showResultModal(matches, searchName, searchYear) {
                             <span class="detail-value">${m.position}</span>
                         </div>
                         <div class="detail-row">
+                            <span class="detail-label">총 경력</span>
+                            <span class="detail-value">${m.experience}</span>
+                        </div>
+                        <div class="detail-row">
                             <span class="detail-label">등록일자</span>
                             <span class="detail-value">${m.date}</span>
                         </div>
