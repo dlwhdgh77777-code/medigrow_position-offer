@@ -326,17 +326,42 @@ tr:hover td {
 .result-card {
     position: relative;
     text-align: center;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.match-list {
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-top: 10px;
+}
+
+.match-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.match-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
 }
 
 .close-btn {
     position: absolute;
-    top: -20px;
-    right: -20px;
-    background: none;
-    border: none;
-    font-size: 24px;
+    top: -25px;
+    right: -25px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 20px;
     cursor: pointer;
     color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
 }
 
 .match-header {

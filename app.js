@@ -87,17 +87,22 @@ function processData(data, isCached = false) {
     
     candidates = data.slice(3)
         .filter(row => row[0]) 
-        .map(row => ({
-            name: row[0].trim(),
-            position: row[1] || '-',
-            platform: row[2] || '-',
-            birthYear: row[3] || '-',
-            date: row[4] || '-',
-            experience: row[5] || '-',
-            interviewed: row[6] === 'O',
-            passed: row[7] === 'O',
-            remarks: row[8] || ''
-        }));
+        .map(row => {
+            const baseExp = row[5] || '-';
+            const regDate = row[4] || '-';
+            return {
+                name: row[0].trim(),
+                position: row[1] || '-',
+                platform: row[2] || '-',
+                birthYear: row[3] || '-',
+                date: regDate,
+                baseExperience: baseExp,
+                experience: calculateCurrentExperience(baseExp, regDate),
+                interviewed: row[6] === 'O',
+                passed: row[7] === 'O',
+                remarks: row[8] || ''
+            };
+        });
     
     updateDashboard();
     renderHistoryTable();
@@ -113,6 +118,45 @@ function processData(data, isCached = false) {
     }
 }
 
+// 1.1 Helper: Calculate current experience based on registration date
+function calculateCurrentExperience(baseExp, regDateStr) {
+    if (!baseExp || baseExp === '-' || baseExp.includes('입사')) return baseExp;
+    
+    // Parse Registration Date (YY.MM.DD)
+    const dateParts = regDateStr.split('.').map(n => parseInt(n));
+    if (dateParts.length < 2 || isNaN(dateParts[0])) return baseExp;
+    
+    const regDate = new Date(2000 + dateParts[0], dateParts[1] - 1, dateParts[2] || 1);
+    const now = new Date();
+    
+    // Calculate month difference
+    let monthsPassed = (now.getFullYear() - regDate.getFullYear()) * 12 + (now.getMonth() - regDate.getMonth());
+    if (now.getDate() < regDate.getDate()) monthsPassed--; 
+
+    if (monthsPassed <= 0) return baseExp;
+
+    // Parse Base Experience (e.g., "4년 1개월", "10개월", "2년")
+    let totalBaseMonths = 0;
+    const yearMatch = baseExp.match(/(\d+)\s*년/);
+    const monthMatch = baseExp.match(/(\d+)\s*개월/);
+    
+    if (yearMatch) totalBaseMonths += parseInt(yearMatch[1]) * 12;
+    if (monthMatch) totalBaseMonths += parseInt(monthMatch[1]);
+
+    if (totalBaseMonths === 0 && !baseExp.includes('개월') && !baseExp.includes('년')) return baseExp;
+
+    const totalCurrentMonths = totalBaseMonths + monthsPassed;
+
+    const finalYears = Math.floor(totalCurrentMonths / 12);
+    const finalMonths = totalCurrentMonths % 12;
+    
+    let result = '';
+    if (finalYears > 0) result += `${finalYears}년 `;
+    if (finalMonths > 0) result += `${finalMonths}개월`;
+    
+    return result.trim() || '1개월 미만';
+}
+
 // 2. Dashboard Updates
 function updateDashboard() {
     // Stats
@@ -125,9 +169,12 @@ function updateDashboard() {
     const rate = candidates.length > 0 ? Math.round((interviewCount / candidates.length) * 100) : 0;
     elements.statInterviewRate.textContent = `${rate}%`;
     
-    // Month count (hacky parsing based on '26.03.23' format)
-    const currentMonth = '03'; // Assuming March based on sample
-    const monthCount = candidates.filter(c => c.date.includes(`.${currentMonth}.`)).length;
+    // Month count (Automatic detection based on current year/month)
+    const now = new Date();
+    const currentYearShort = now.getFullYear().toString().slice(-2);
+    const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+    
+    const monthCount = candidates.filter(c => c.date.startsWith(`${currentYearShort}.${currentMonth}.`)).length;
     elements.statMonth.textContent = monthCount;
 
     renderCharts();
