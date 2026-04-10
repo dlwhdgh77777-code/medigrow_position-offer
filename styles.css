@@ -332,8 +332,15 @@ tr:hover td {
     text-align: center;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    max-height: 100%;
     overflow: hidden;
+}
+
+#result-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
 }
 
 .match-list {
@@ -341,7 +348,6 @@ tr:hover td {
     padding-right: 8px;
     margin-top: 10px;
     flex: 1;
-    min-height: 0;
 }
 
 .match-list::-webkit-scrollbar {
